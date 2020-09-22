@@ -1,0 +1,127 @@
+package com.born.secKill02.utils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.born.secKill02.config.param.DBConfig;
+import com.born.secKill02.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+
+/**
+ * @Description: 用户工具类
+ * @Since: jdk1.8
+ * @Author: gyk
+ * @Date: 2020-04-24 12:24:47
+ */
+public class UserUtil {
+
+    private static Connection connection;
+
+	static {
+		try {
+			connection = new DBConfig().DBConn();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+     * 批量创建用户数据，为压力测试做准备
+     * 1.批量生成用户
+     * 2.把用户存入数据库
+     * 3.得到各个用户的token，并将其统一放入文件中
+     * @param count 创建数量
+     * @throws Exception
+     */
+    public static void createUser(int count) throws Exception{
+        List<User> userList=new ArrayList<User>(count*3/4-1);
+        //生成用户
+        for (int i = 0; i < count; i++) {
+            User user = new User();
+            user.setUserId(1300000000000L+i);
+            user.setUserNickName("user"+i);
+            user.setUserSalt("a43gsa");
+            user.setUserPassword(MD5Util.inputPassToDbPass("123456", user.getUserSalt()));
+            user.setUserRegisterDate(new Date());
+            user.setUserLoginCount(1);
+            userList.add(user);
+        }
+        //插入数据库
+        String sql = "insert into user(user_id,user_nick_name,user_password,user_salt,user_register_date,user_login_count)values(?,?,?,?,?,?)";
+
+		PreparedStatement pstmt = connection.prepareStatement(sql);
+		for(int i=0;i<userList.size();i++) {
+			User user = userList.get(i);
+			pstmt.setLong(1, user.getUserId());
+			pstmt.setString(2, user.getUserNickName());
+			pstmt.setString(3, user.getUserPassword());
+			pstmt.setString(4, user.getUserSalt());
+			pstmt.setTimestamp(5, new Timestamp(user.getUserRegisterDate().getTime()));
+			pstmt.setInt(6, user.getUserLoginCount());
+			pstmt.addBatch();
+		}
+		pstmt.executeBatch();
+		pstmt.close();
+		connection.close();
+        //connection
+        //System.out.println(connection);
+		//登录，生成token
+		String urlString = "http://localhost:8080/login/do_login";
+		File file = new File("D:/tokens.txt");
+		if(file.exists()) {
+			file.delete();
+		}
+		RandomAccessFile raf = new RandomAccessFile(file, "rw");
+		file.createNewFile();
+		raf.seek(0);
+		for(int i=0;i<userList.size();i++) {
+			User user = userList.get(i);
+			URL url = new URL(urlString);
+			HttpURLConnection co = (HttpURLConnection)url.openConnection();
+			co.setRequestMethod("POST");
+			co.setDoOutput(true);
+			OutputStream out = co.getOutputStream();
+			String params = "mobile="+user.getUserId()+"&password="+MD5Util.inputPassToFormPass("123456");
+			out.write(params.getBytes());
+			out.flush();
+			InputStream inputStream = co.getInputStream();
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			byte buff[] = new byte[1024];
+			int len = 0;
+			while((len = inputStream.read(buff)) >= 0) {
+				bout.write(buff, 0 ,len);
+			}
+			inputStream.close();
+			bout.close();
+			String response = new String(bout.toByteArray());
+			JSONObject jo = JSON.parseObject(response);
+			String token = jo.getString("data");
+			System.out.println("create token : " + user.getUserId());
+
+			String row = user.getUserId()+","+token;
+			raf.seek(raf.length());
+			raf.write(row.getBytes());
+			raf.write("\r\n".getBytes());
+			System.out.println("write to file : " + user.getUserId());
+		}
+		raf.close();
+
+		System.out.println("over");
+	}
+
+    public static void main(String[] args) throws Exception {
+        createUser(10);
+    }
+}

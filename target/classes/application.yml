@@ -1,0 +1,52 @@
+spring:
+    thymeleaf:
+        #关闭缓存，默认是开启的
+        #此时还要将File-setting-Build-comlier中的Build Project automaticlly勾选上
+        cache: false
+        enabled: true
+        encoding: UTF-8
+        servlet:
+            content-type: text/html
+        mode: HTML5
+        prefix: classpath:/templates/
+        suffix: .html
+    datasource:
+        #druid
+        url: jdbc:mysql://localhost:3306/db_second_kill_02?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+        username: root
+        password: root
+        driver-class-name: com.mysql.jdbc.Driver
+#        type: com.alibaba.druid.pool.DruidDataSource
+#        filters: stat
+#        maxActive: 1000
+#        initialSize: 100
+#        maxWait: 60000
+#        minIdle: 500
+#        timeBetweenEvictionRunsMillis: 60000
+#        minEvictableIdleTimeMillis: 300000
+#        validationQuery: select 'x'
+#        testWhileIdle: true
+#        testOnBorrow: false
+#        testOnReturn: false
+#        poolPreparedStatements: true
+#        maxOpenPreparedStatements: 20
+
+#redis
+    redis:
+        host: 192.168.235.131
+        port: 6379
+        timeout: 3
+        password: 123456
+        poolMaxTotal: 1000
+        poolMaxIdle: 1000
+        poolMaxWait: 500
+
+mybatis:
+    type-aliases-package: com.born.secKill02.entity
+    configuration:
+        map-underscore-to-camel-case: true
+        default-fetch-size: 100
+        default-statement-timeout: 3000
+    mapper-locations: classpath:mapper/*.xml
+    
+

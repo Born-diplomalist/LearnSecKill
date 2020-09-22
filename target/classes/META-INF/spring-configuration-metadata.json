@@ -1,0 +1,73 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "name": "redis",
+      "type": "com.born.secKill02.config.redis.RedisConfig"
+    },
+    {
+      "sourceType": "com.born.secKill02.entity.DataSource",
+      "name": "spring",
+      "type": "com.born.secKill02.entity.DataSource"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": "127.0.0.1",
+      "name": "redis.host",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": 10,
+      "name": "redis.pool-max-idle",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": 10,
+      "name": "redis.pool-max-total",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": 3,
+      "name": "redis.pool-max-wait",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": 6379,
+      "name": "redis.port",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.born.secKill02.config.redis.RedisConfig",
+      "defaultValue": 3,
+      "name": "redis.time-out",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.born.secKill02.entity.DataSource",
+      "name": "spring.driver-class-name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.born.secKill02.entity.DataSource",
+      "name": "spring.password",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.born.secKill02.entity.DataSource",
+      "name": "spring.url",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.born.secKill02.entity.DataSource",
+      "name": "spring.username",
+      "type": "java.lang.String"
+    }
+  ]
+}
